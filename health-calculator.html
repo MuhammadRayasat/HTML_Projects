@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Health & Fitness Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'neon-green': '#00ff88',
+                        'electric-blue': '#0080ff',
+                        'dark-bg': '#0f172a',
+                        'glass-bg': 'rgba(15, 23, 42, 0.8)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .glass-card {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 255, 136, 0.1);
+        }
+
+        .neon-border {
+            position: relative;
+        }
+
+        .neon-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00ff88, #0080ff, #00ff88);
+            z-index: -1;
+            border-radius: inherit;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { opacity: 0.3; }
+            to { opacity: 0.8; }
+        }
+
+        .input-glow {
+            color: black;
+        }
+
+        .input-glow:focus {
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            outline: none;
+        }
+
+        .animate-pop {
+            animation: pop 0.3s ease-out;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Light Mode Styles */
+        .dark-mode {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%);
+            color: #1e293b;
+        }
+
+        .dark-mode .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            color: #1e293b;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .neon-border::before {
+            background: linear-gradient(45deg, #10b981, #3b82f6, #10b981);
+            opacity: 0.5;
+        }
+
+        .dark-mode .input-glow,
+        .dark-mode .input-glow:focus {
+            background: rgba(255, 255, 255, 0.95);
+            color: #1e293b;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .dark-mode {
+            color: #1e293b;
+        }
+
+        .dark-mode .text-neon-green {
+            color: #059669 !important;
+        }
+
+        .dark-mode .text-electric-blue {
+            color: #2563eb !important;
+        }
+
+        .dark-mode .bg-gradient-to-r.from-neon-green.to-electric-blue {
+            background: linear-gradient(90deg, #10b981, #3b82f6) !important;
+            color: white !important;
+        }
+
+        .dark-mode .text-gray-300 {
+            color: #64748b !important;
+        }
+
+        .dark-mode .border-neon-green {
+            border-color: #10b981 !important;
+        }
+
+        .dark-mode .border-electric-blue {
+            border-color: #3b82f6 !important;
+        }
+
+        .dark-mode .border-blue-400 {
+            border-color: #60a5fa !important;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #00ff88, #0080ff);
+            transition: width 0.3s ease;
+        }
+
+        .result-section {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+
+        .result-section.show {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        /* Custom scrollbar styling */
+        .result-section.show::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .result-section.show::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 3px;
+        }
+
+        .result-section.show::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #00ff88, #0080ff);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-dark-bg text-white">
+    <!-- Navigation -->
+    <nav class="glass-card p-4 mb-8 neon-border">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl orbitron font-bold text-neon-green flex items-center">
+                <i class="fas fa-brain mr-2"></i>
+                AI Health Calculator
+            </h1>
+            <button onclick="toggleDarkMode()" class="glass-card p-2 rounded-lg hover:bg-glass-bg transition-colors">
+                <i class="fas fa-moon text-electric-blue"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 pb-8">
+        <!-- Header -->
+        <div class="text-center mb-12 slide-in">
+            <h2 class="text-4xl md:text-6xl orbitron font-bold mb-4 bg-gradient-to-r from-neon-green to-electric-blue bg-clip-text text-transparent">
+                AI Health & Fitness
+            </h2>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+                Advanced health calculations powered by artificial intelligence insights
+            </p>
+        </div>
+
+        <!-- Main Calculator Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Left Column - Calculators -->
+            <div class="space-y-6">
+                <!-- BMI Calculator -->
+                <div class="glass-card p-6 rounded-xl slide-in">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-weight-scale mr-3 text-neon-green"></i>
+                        BMI Calculator
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Weight (kg)</label>
+                            <input type="number" id="bmi-weight" class="w-full glass-card p-3 rounded-lg input-glow text-black" placeholder="Enter weight in kg" min="1" max="500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Height (cm)</label>
+                            <input type="number" id="bmi-height" class="w-full glass-card p-3 rounded-lg input-glow text-black" placeholder="Enter height in cm" min="1" max="300">
+                        </div>
+                        <button onclick="calculateBMI()" class="w-full glass-card bg-gradient-to-r from-neon-green to-electric-blue text-black font-bold py-3 rounded-lg hover:opacity-90 transition-opacity">
+                            Calculate BMI
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Calorie Calculator -->
+                <div class="glass-card p-6 rounded-xl slide-in">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-fire mr-3 text-electric-blue"></i>
+                        Daily Calorie Needs
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Age</label>
+                                <input type="number" id="cal-age" class="w-full glass-card p-3 rounded-lg input-glow text-black" placeholder="Age" min="1" max="120">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Gender</label>
+                                <select id="cal-gender" class="w-full glass-card p-3 rounded-lg input-glow text-black">
+                                    <option value="">Select</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Weight (kg)</label>
+                                <input type="number" id="cal-weight" class="w-full glass-card p-3 rounded-lg input-glow text-black" placeholder="Weight" min="1" max="500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Height (cm)</label>
+                                <input type="number" id="cal-height" class="w-full glass-card p-3 rounded-lg input-glow text-black" placeholder="Height" min="1" max="300">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Activity Level</label>
+                            <select id="cal-activity" class="w-full glass-card p-3 rounded-lg input-glow text-black">
+                                <option value="">Select Activity</option>
+                                <option value="1.2">Sedentary (little or no exercise)</option>
+                                <option value="1.375">Lightly active (light exercise 1-3 days/week)</option>
+                                <option value="1.55">Moderately active (moderate exercise 3-5 days/week)</option>
+                                <option value="1.725">Very active (hard exercise 6-7 days/week)</option>
+                                <option value="1.9">Extra active (very hard exercise & physical job)</option>
+                            </select>
+                        </div>
+                        <button onclick="calculateCalories()" class="w-full glass-card bg-gradient-to-r from-neon-green to-electric-blue text-black font-bold py-3 rounded-lg hover:opacity-90 transition-opacity">
+                            Calculate Calories
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Water Intake Calculator -->
+                <div class="glass-card p-6 rounded-xl slide-in">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-tint mr-3 text-blue-400"></i>
+                        Water Intake Tracker
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Body Weight (kg)</label>
+                            <input type="number" id="water-weight" class="w-full glass-card p-3 rounded-lg input-glow text-black" placeholder="Enter your weight" min="1" max="500">
+                        </div>
+                        <button onclick="calculateWaterIntake()" class="w-full glass-card bg-gradient-to-r from-neon-green to-electric-blue text-black font-bold py-3 rounded-lg hover:opacity-90 transition-opacity">
+                            Calculate Water Needs
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Results -->
+            <div class="space-y-6">
+                <!-- Results Section -->
+                <div id="results-section" class="result-section glass-card p-6 rounded-xl slide-in">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-chart-line mr-3 text-neon-green"></i>
+                        Results
+                    </h3>
+                    <div id="results-content" class="space-y-4">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+
+                <!-- AI Tips Section -->
+                <div id="ai-tips-section" class="result-section glass-card p-6 rounded-xl slide-in">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-robot mr-3 text-electric-blue"></i>
+                        AI Health Insights
+                    </h3>
+                    <div id="ai-tips-content" class="space-y-3">
+                        <div class="text-gray-300 italic">
+                            Complete calculations to see personalized AI recommendations...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Tracker -->
+                <div class="glass-card p-6 rounded-xl slide-in">
+                    <h3 class="text-xl font-bold mb-4">Health Progress</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between text-sm">
+                            <span>BMI Analysis</span>
+                            <span id="bmi-progress">0%</span>
+                        </div>
+                        <div class="progress-bar" id="bmi-progress-bar" style="width: 0%"></div>
+
+                        <div class="flex justify-between text-sm">
+                            <span>Calorie Planning</span>
+                            <span id="calorie-progress">0%</span>
+                        </div>
+                        <div class="progress-bar" id="calorie-progress-bar" style="width: 0%"></div>
+
+                        <div class="flex justify-between text-sm">
+                            <span>Hydration Tracking</span>
+                            <span id="water-progress">0%</span>
+                        </div>
+                        <div class="progress-bar" id="water-progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state to store calculation results
+        let calculationResults = {};
+
+        // Calculate BMI
+        function calculateBMI() {
+            const weight = parseFloat(document.getElementById('bmi-weight').value);
+            const height = parseFloat(document.getElementById('bmi-height').value);
+
+            if (!weight || !height || weight <= 0 || height <= 0) {
+                alert('Please enter valid weight and height values.');
+                return;
+            }
+
+            const heightMeters = height / 100;
+            const bmi = weight / (heightMeters * heightMeters);
+            const category = getBMICategory(bmi);
+
+            calculationResults.bmi = { value: bmi, category };
+
+            // Update results display
+            updateResultsDisplay();
+            updateProgress();
+
+            // Show result with animation
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'animate-pop glass-card p-4 rounded-lg border-l-4 border-neon-green';
+            resultDiv.innerHTML = `
+                <h4 class="font-bold text-lg mb-2">BMI Result</h4>
+                <div class="text-3xl font-bold text-neon-green mb-2">${bmi.toFixed(1)}</div>
+                <div class="text-gray-300">Category: <span class="font-semibold" style="color: ${getCategoryColor(category)}">${category}</span></div>
+                <div class="mt-2 text-sm text-gray-400">${getBMIAdvice(category)}</div>
+            `;
+
+            // Remove existing BMI result and add new one
+            removeExistingResult('bmi-result');
+            document.getElementById('results-content').appendChild(resultDiv);
+            resultDiv.id = 'bmi-result';
+
+            // Show AI tips
+            generateAITips();
+        }
+
+        // Calculate Daily Calorie Needs using Mifflin-St Jeor Equation
+        function calculateCalories() {
+            const age = parseFloat(document.getElementById('cal-age').value);
+            const gender = document.getElementById('cal-gender').value;
+            const weight = parseFloat(document.getElementById('cal-weight').value);
+            const height = parseFloat(document.getElementById('cal-height').value);
+            const activity = parseFloat(document.getElementById('cal-activity').value);
+
+            if (!age || !gender || !weight || !height || !activity) {
+                alert('Please fill in all fields for calorie calculation.');
+                return;
+            }
+
+            // Mifflin-St Jeor Equation
+            let bmr;
+            if (gender === 'male') {
+                bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+            } else {
+                bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+            }
+
+            const tdee = bmr * activity;
+
+            calculationResults.calories = { value: Math.round(tdee), bmr: Math.round(bmr), activity };
+
+            // Update results display
+            updateResultsDisplay();
+            updateProgress();
+
+            // Show result with animation
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'animate-pop glass-card p-4 rounded-lg border-l-4 border-electric-blue';
+            resultDiv.innerHTML = `
+                <h4 class="font-bold text-lg mb-2">Daily Calorie Needs</h4>
+                <div class="text-3xl font-bold text-electric-blue mb-2">${tdee.toLocaleString()}</div>
+                <div class="text-gray-300">BMR: ${Math.round(bmr)} calories</div>
+                <div class="text-gray-300">Activity Multiplier: ${activity}</div>
+                <div class="mt-2 text-sm text-gray-400">${getCalorieAdvice(tdee)}</div>
+            `;
+
+            // Remove existing calorie result and add new one
+            removeExistingResult('calorie-result');
+            document.getElementById('results-content').appendChild(resultDiv);
+            resultDiv.id = 'calorie-result';
+
+            // Show AI tips
+            generateAITips();
+        }
+
+        // Calculate Water Intake
+        function calculateWaterIntake() {
+            const weight = parseFloat(document.getElementById('water-weight').value);
+
+            if (!weight || weight <= 0) {
+                alert('Please enter a valid weight.');
+                return;
+            }
+
+            // General recommendation: 35ml per kg of body weight (standard recommendation)
+            const waterIntake = weight * 35; // in ml
+            const waterIntakeL = waterIntake / 1000; // in liters
+
+            calculationResults.water = { value: waterIntakeL, ml: waterIntake };
+
+            // Update results display
+            updateResultsDisplay();
+            updateProgress();
+
+            // Show result with animation
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'animate-pop glass-card p-4 rounded-lg border-l-4 border-blue-400';
+            resultDiv.innerHTML = `
+                <h4 class="font-bold text-lg mb-2">Daily Water Intake</h4>
+                <div class="text-3xl font-bold text-blue-400 mb-2">${waterIntakeL.toFixed(1)}L</div>
+                <div class="text-gray-300">${waterIntake.toLocaleString()} ml</div>
+                <div class="mt-2 text-sm text-gray-400">${getWaterAdvice(waterIntakeL)}</div>
+            `;
+
+            // Remove existing water result and add new one
+            removeExistingResult('water-result');
+            document.getElementById('results-content').appendChild(resultDiv);
+            resultDiv.id = 'water-result';
+
+            // Show AI tips
+            generateAITips();
+        }
+
+        // Helper functions for BMI
+        function getBMICategory(bmi) {
+            if (bmi < 18.5) return 'Underweight';
+            if (bmi < 25) return 'Normal Weight';
+            if (bmi < 30) return 'Overweight';
+            return 'Obese';
+        }
+
+        function getCategoryColor(category) {
+            switch(category) {
+                case 'Underweight': return '#00ff88';
+                case 'Normal Weight': return '#00ff88';
+                case 'Overweight': return '#ffcc00';
+                case 'Obese': return '#ff4444';
+                default: return '#ffffff';
+            }
+        }
+
+        function getBMIAdvice(category) {
+            switch(category) {
+                case 'Underweight':
+                    return 'Consider consulting a nutritionist for healthy weight gain strategies.';
+                case 'Normal Weight':
+                    return 'Great job! Maintain your healthy lifestyle.';
+                case 'Overweight':
+                    return 'Consider incorporating more exercise and balanced nutrition.';
+                case 'Obese':
+                    return 'Consult with a healthcare professional for personalized guidance.';
+                default:
+                    return '';
+            }
+        }
+
+        // Helper functions for Calorie Calculation
+        function getCalorieAdvice(calories) {
+            if (calories < 1200) return 'This is very low - consult a doctor before restricting calories further.';
+            if (calories < 1800) return 'Maintain for weight loss or slight surplus for muscle gain.';
+            if (calories < 2500) return 'Good maintenance level for most adults.';
+            return 'High energy needs - likely very active individual.';
+        }
+
+        // Helper functions for Water Calculation
+        function getWaterAdvice(liters) {
+            return `Aim to drink ${liters.toFixed(1)} liters (${Math.round(liters * 4)} glasses) of water daily.`;
+        }
+
+        // Generate AI Tips based on results
+        function generateAITips() {
+            const tipsContainer = document.getElementById('ai-tips-content');
+            let tips = [];
+
+            if (calculationResults.bmi) {
+                const { value: bmi, category } = calculationResults.bmi;
+                tips.push(`Your BMI is ${bmi.toFixed(1)}, categorized as ${category}. Consider focusing on ${getFocusArea(category)}.`);
+            }
+
+            if (calculationResults.calories) {
+                const { value: calories } = calculationResults.calories;
+                tips.push(`Your daily calorie needs are ${calories.toLocaleString()}. ${getNutritionTip(calories)}.`);
+            }
+
+            if (calculationResults.water) {
+                const { value: water } = calculationResults.water;
+                tips.push(`Stay hydrated with ${water.toFixed(1)}L of water daily. Hydration supports metabolism and overall health.`);
+            }
+
+            if (tips.length === 0) {
+                tipsContainer.innerHTML = '<div class="text-gray-300 italic">Complete calculations to see personalized AI recommendations...</div>';
+                return;
+            }
+
+            // Clear container and add tips
+            tipsContainer.innerHTML = '';
+            tips.forEach((tip, index) => {
+                const tipElement = document.createElement('div');
+                tipElement.className = 'animate-pop glass-card p-3 rounded-lg mb-2 last:mb-0';
+                tipElement.style.animationDelay = `${index * 0.1}s`;
+                tipElement.innerHTML = `
+                    <div class="flex items-start">
+                        <i class="fas fa-lightbulb text-yellow-400 mt-1 mr-3"></i>
+                        <span>${tip}</span>
+                    </div>
+                `;
+                tipsContainer.appendChild(tipElement);
+            });
+
+            // Show the AI tips section
+            document.getElementById('ai-tips-section').classList.add('show');
+        }
+
+        // Helper functions for AI Tips
+        function getFocusArea(category) {
+            switch(category) {
+                case 'Underweight': return 'nutrient-dense foods and strength training';
+                case 'Normal Weight': return 'maintaining consistency and variety';
+                case 'Overweight': return 'portion control and regular cardio exercise';
+                case 'Obese': return 'gradual lifestyle changes and professional support';
+                default: return 'balanced nutrition and regular exercise';
+            }
+        }
+
+        function getNutritionTip(calories) {
+            if (calories < 1800) return 'Focus on nutrient density over calorie counting.';
+            if (calories > 2500) return 'Ensure your diet includes plenty of protein and vegetables.';
+            return 'Balance your macronutrients throughout the day.';
+        }
+
+        // Update results display visibility
+        function updateResultsDisplay() {
+            const resultsSection = document.getElementById('results-section');
+            if (Object.keys(calculationResults).length > 0) {
+                resultsSection.classList.add('show');
+            }
+        }
+
+        // Update progress bars
+        function updateProgress() {
+            // Update individual progress bars
+            const bmiProgress = calculationResults.bmi ? 100 : 0;
+            const calorieProgress = calculationResults.calories ? 100 : 0;
+            const waterProgress = calculationResults.water ? 100 : 0;
+
+            document.getElementById('bmi-progress').textContent = `${bmiProgress}%`;
+            document.getElementById('bmi-progress-bar').style.width = `${bmiProgress}%`;
+
+            document.getElementById('calorie-progress').textContent = `${calorieProgress}%`;
+            document.getElementById('calorie-progress-bar').style.width = `${calorieProgress}%`;
+
+            document.getElementById('water-progress').textContent = `${waterProgress}%`;
+            document.getElementById('water-progress-bar').style.width = `${waterProgress}%`;
+
+            // Calculate overall progress
+            const totalCalculations = 3;
+            const completed = Object.keys(calculationResults).filter(key => calculationResults[key]).length;
+            const overallProgress = Math.round((completed / totalCalculations) * 100);
+
+            // Update any overall progress indicator if needed
+            console.log(`Overall progress: ${overallProgress}%`); // Debugging
+        }
+
+        // Remove existing result element
+        function removeExistingResult(id) {
+            const existing = document.getElementById(id);
+            if (existing) {
+                existing.remove();
+            }
+        }
+
+        // Toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('nav i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+
+        // Initialize with sample data for demo
+        function initializeDemo() {
+            setTimeout(() => {
+                document.getElementById('bmi-weight').value = '70';
+                document.getElementById('bmi-height').value = '175';
+                calculateBMI();
+            }, 1000);
+
+            setTimeout(() => {
+                document.getElementById('cal-age').value = '30';
+                document.getElementById('cal-gender').value = 'male';
+                document.getElementById('cal-weight').value = '70';
+                document.getElementById('cal-height').value = '175';
+                document.getElementById('cal-activity').value = '1.55';
+                calculateCalories();
+            }, 2000);
+
+            setTimeout(() => {
+                document.getElementById('water-weight').value = '70';
+                calculateWaterIntake();
+            }, 3000);
+        }
+
+        // Initialize progress bars on load
+        window.addEventListener('load', () => {
+            updateProgress(); // Initialize progress bars to 0%
+            setTimeout(initializeDemo, 500);
+        });
+    </script>
+</body>
+</html>

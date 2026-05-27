@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Playfair Display', serif;
+            color: #4a148c;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+            background: linear-gradient(300deg, #ffdde1, #ee9ca7, #ff9a9e);
+            background-size: 180% 180%;
+            animation: animated-gradient 12s ease infinite;
+        }
+        @keyframes animated-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            width: 100%;
+            z-index: 1;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5em;
+            color: #d81b60;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s ease-in-out, breathing 4s ease-in-out infinite;
+        }
+        @keyframes breathing {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        p {
+            font-size: 1.3em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease-in-out;
+        }
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            min-height: 80px;
+        }
+        button {
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        #yesButton {
+            background-color: #4CAF50;
+            animation: pulse 1.5s infinite;
+        }
+        #noButton {
+            background-color: #f44336;
+            position: relative;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+        .particle {
+            position: absolute;
+            color: #ff4081;
+            opacity: 0;
+            animation: float 10s ease-in-out infinite;
+            z-index: 0;
+        }
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            25% { opacity: 0.7; }
+            50% { transform: translateY(150px) scale(1.5); }
+            75% { opacity: 0.7; }
+            100% { transform: translateY(300px) scale(1); opacity: 0; }
+        }
+
+        /* --- Ultimate Valentine's Celebration --- */
+        .celebration {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #d81b60, #a01040);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeIn 1s ease-in-out, background-pulse 4s infinite;
+        }
+        .valentine-card {
+            display: none;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            animation: fade-in-card 1.5s ease-out forwards;
+            z-index: 10;
+        }
+        .valentine-card h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5em;
+            color: #d81b60;
+            margin: 0;
+        }
+        .valentine-card p {
+            color: #4a148c;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+        .burst-heart {
+            position: absolute;
+            color: red;
+            font-size: 2em;
+            animation: heart-burst 1.5s ease-out forwards;
+        }
+        .slow-sprinkle {
+            position: absolute;
+            pointer-events: none; /* Allows clicks to pass through */
+            z-index: 5; /* Below the card, above the background */
+            opacity: 0; /* Handled by animation */
+            animation: slow-heart-fall var(--animation-duration) linear var(--animation-delay) forwards;
+        }
+        @keyframes background-pulse {
+            0%, 100% { background: radial-gradient(circle, #d81b60, #a01040); }
+            50% { background: radial-gradient(circle, #ff4081, #d81b60); }
+        }
+        @keyframes heart-burst {
+            0% { transform: translate(0, 0) scale(0.5); opacity: 1; }
+            100% { transform: var(--transform-end) scale(1); opacity: 0; }
+        }
+        @keyframes fade-in-card {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slow-heart-fall {
+            0% { transform: translateY(-10vh); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(110vh); opacity: 0; }
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    </style>
+</head>
+<body>
+    <div id="hearts-container"></div>
+    <div class="container">
+        <h1>My Dearest Valentine,</h1>
+        <p>With every beat of my heart, I find myself thinking of you. Your smile brightens my day, and your presence fills my world with joy. This Valentine's Day, I wanted to ask you something special.</p>
+        <p>Will you be my Valentine?</p>
+        <div class="buttons">
+            <button id="yesButton">Yes!</button>
+            <button id="noButton">No! </button>
+        </div>
+    </div>
+
+    <div class="celebration">
+        <div class="valentine-card">
+            <h2>You Said Yes!</h2>
+            <p>Every moment with you is a treasure. I'm so excited for our journey together. Happy Valentine's Day, my love!</p>
+        </div>
+    </div>
+
+    <script>
+        const yesButton = document.getElementById('yesButton');
+        const noButton = document.getElementById('noButton');
+        const container = document.querySelector('.container');
+        const celebration = document.querySelector('.celebration');
+
+        const noMessages = [
+            "No", "Are you sure?", "Really sure?", "Think again!",
+            "Last chance!", "Surely not?", "Pookie please", "Don't do this to me",
+            "I'm gonna cry...", "You're breaking my heart ;("
+        ];
+        let noMessageIndex = 0;
+        let yesButtonSize = 1;
+
+        noButton.addEventListener('mouseover', (e) => {
+            yesButtonSize += 0.2;
+            yesButton.style.transform = `scale(${yesButtonSize})`;
+            noMessageIndex = (noMessageIndex + 1) % noMessages.length;
+            noButton.innerText = noMessages[noMessageIndex];
+            const containerRect = container.getBoundingClientRect();
+            const buttonRect = noButton.getBoundingClientRect();
+            let randomX = Math.random() * (containerRect.width - buttonRect.width);
+            let randomY = Math.random() * (containerRect.height - buttonRect.height);
+            noButton.style.position = 'absolute';
+            noButton.style.left = randomX + 'px';
+            noButton.style.top = randomY + 'px';
+        });
+
+        yesButton.addEventListener('click', () => {
+            clearInterval(particleInterval);
+            container.style.display = 'none';
+            celebration.style.display = 'flex';
+            startValentineCelebration();
+        });
+
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.innerHTML = '&#10084;';
+            const size = Math.random() * 12 + 8;
+            particle.style.fontSize = size + 'px';
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = '-20px';
+            particle.style.animationDuration = Math.random() * 5 + 5 + 's';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 10000);
+        }
+        const particleInterval = setInterval(createParticle, 250);
+
+        function createSlowSprinkle() {
+            const sprinkle = document.createElement('div');
+            sprinkle.classList.add('slow-sprinkle');
+            sprinkle.innerHTML = '&#10084;';
+            const size = Math.random() * 10 + 5; // Size between 5px and 15px
+            sprinkle.style.fontSize = size + 'px';
+            sprinkle.style.left = Math.random() * 100 + 'vw';
+            sprinkle.style.top = '-10%'; // Start above the screen
+            sprinkle.style.color = ['#ff80ab', '#ffc1d6', '#f0f'][Math.floor(Math.random() * 3)];
+            sprinkle.style.setProperty('--animation-duration', (Math.random() * 10 + 10) + 's'); // 10-20 seconds for slow motion
+            sprinkle.style.setProperty('--animation-delay', Math.random() * 5 + 's');
+            celebration.appendChild(sprinkle);
+            setTimeout(() => sprinkle.remove(), 20000); // Remove after animation
+        }
+
+        function startValentineCelebration() {
+            // Create a burst of hearts
+            for (let i = 0; i < 50; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('burst-heart');
+                heart.innerHTML = '&#10084;';
+                const angle = Math.random() * 360;
+                const radius = Math.random() * 200 + 100;
+                const endX = Math.cos(angle * Math.PI / 180) * radius;
+                const endY = Math.sin(angle * Math.PI / 180) * radius;
+                
+                heart.style.setProperty('--transform-end', `translate(${endX}px, ${endY}px) rotate(720deg)`);
+                heart.style.color = ['#ff4081', '#ff80ab', '#ffc1d6'][Math.floor(Math.random() * 3)];
+                heart.style.left = '50%';
+                heart.style.top = '50%';
+                celebration.appendChild(heart);
+
+                setTimeout(() => heart.remove(), 1500);
+            }
+
+            // Show the card after the burst
+            setTimeout(() => {
+                const card = document.querySelector('.valentine-card');
+                card.style.display = 'block';
+                setInterval(createSlowSprinkle, 500); // Start slow sprinkles after card appears
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

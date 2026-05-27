@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Link Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 8px 12px;
+            margin: 2px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #e0e0e0;
+        }
+
+        button.primary {
+            background-color: #007cba;
+            color: white;
+        }
+
+        button.primary:hover {
+            background-color: #005a87;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .list-section {
+            margin: 20px 0;
+        }
+
+        .list-container {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            height: 150px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            background-color: white;
+        }
+
+        .list-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item.selected {
+            background-color: #e6f3ff;
+        }
+
+        .item-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .item-buttons {
+            display: flex;
+            gap: 3px;
+        }
+
+        .item-button {
+            padding: 3px 6px;
+            font-size: 12px;
+        }
+
+        .result-section {
+            margin-top: 20px;
+        }
+
+        .result-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .success-message {
+            color: #388e3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .flex-right {
+            display: flex;
+            justify-content: flex-end;
+            gap: 5px;
+        }
+
+        .flex-left {
+            display: flex;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GitHub Link Generator</h1>
+
+        <div class="form-group">
+            <label for="username">GitHub Username:</label>
+            <input type="text" id="username" value="M-Rayasat">
+        </div>
+
+        <div class="form-group">
+            <label for="directory">Directory/Repository:</label>
+            <div class="flex-between">
+                <input type="text" id="directory" placeholder="Enter directory name">
+                <button id="add-btn" class="primary">Add Component</button>
+            </div>
+        </div>
+
+        <div class="list-section">
+            <label>Path Components:</label>
+            <div class="list-container" id="list-container">
+                <!-- List items will be added here dynamically -->
+            </div>
+
+            <div class="button-group">
+                <button id="remove-btn">Remove Selected</button>
+                <button id="clear-btn">Clear All</button>
+                <div class="flex-right">
+                    <button id="move-down-btn">Move Down</button>
+                    <button id="move-up-btn">Move Up</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button id="generate-btn" class="primary" style="width: 100%;">Generate & Copy Link</button>
+        </div>
+
+        <div class="result-section">
+            <label>Generated Link:</label>
+            <input type="text" id="result-link" class="result-input" readonly placeholder="Generated link will appear here">
+            <div class="center" style="margin-top: 10px;">
+                <button id="open-link-btn">Open Link in Browser</button>
+            </div>
+        </div>
+
+        <div id="message-area"></div>
+    </div>
+
+    <script>
+        class LinkGeneratorApp {
+            constructor() {
+                this.dirList = [];
+
+                // Elements
+                this.usernameInput = document.getElementById('username');
+                this.directoryInput = document.getElementById('directory');
+                this.listContainer = document.getElementById('list-container');
+                this.resultLinkInput = document.getElementById('result-link');
+                this.messageArea = document.getElementById('message-area');
+
+                // Buttons
+                document.getElementById('add-btn').addEventListener('click', () => this.addDirectory());
+                document.getElementById('remove-btn').addEventListener('click', () => this.removeSelected());
+                document.getElementById('clear-btn').addEventListener('click', () => this.clearAll());
+                document.getElementById('move-up-btn').addEventListener('click', () => this.moveUp());
+                document.getElementById('move-down-btn').addEventListener('click', () => this.moveDown());
+                document.getElementById('generate-btn').addEventListener('click', () => this.generateLink());
+                document.getElementById('open-link-btn').addEventListener('click', () => this.openLink());
+
+                // Enter key support for directory input
+                this.directoryInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.addDirectory();
+                    }
+                });
+
+                // Initialize
+                this.refreshList();
+            }
+
+            addDirectory() {
+                const val = this.directoryInput.value.trim();
+                if (val) {
+                    if (this.isValidPathComponent(val)) {
+                        this.dirList.push(val);
+                        this.directoryInput.value = '';
+                        this.refreshList();
+                    } else {
+                        this.showMessage(`'${val}' is not a valid path component. Use letters, numbers, hyphens, underscores, and periods only.`, 'error');
+                    }
+                }
+            }
+
+            isValidPathComponent(component) {
+                // Allow alphanumeric, hyphens, underscores, and periods
+                const pattern = /^[a-zA-Z0-9._-]+$/;
+                return pattern.test(component) && component.length > 0;
+            }
+
+            removeSelected() {
+                const selectedItems = this.getSelectedItems();
+                if (selectedItems.length > 0) {
+                    // Remove in reverse order to maintain indices
+                    selectedItems.sort((a, b) => b - a);
+                    selectedItems.forEach(index => {
+                        this.dirList.splice(index, 1);
+                    });
+                    this.refreshList();
+                } else {
+                    this.showMessage('Please select an item to remove.', 'error');
+                }
+            }
+
+            getSelectedItems() {
+                const selected = [];
+                const items = this.listContainer.querySelectorAll('.list-item');
+                items.forEach((item, index) => {
+                    if (item.classList.contains('selected')) {
+                        selected.push(index);
+                    }
+                });
+                return selected;
+            }
+
+            moveUp() {
+                const selectedItems = this.getSelectedItems();
+                if (selectedItems.length === 1) {
+                    const index = selectedItems[0];
+                    if (index > 0) {
+                        // Swap items
+                        const item = this.dirList.splice(index, 1)[0];
+                        this.dirList.splice(index - 1, 0, item);
+                        this.refreshList();
+                        // Re-select the moved item
+                        this.selectItem(index - 1);
+                    }
+                } else {
+                    this.showMessage('Please select exactly one item to move.', 'error');
+                }
+            }
+
+            moveDown() {
+                const selectedItems = this.getSelectedItems();
+                if (selectedItems.length === 1) {
+                    const index = selectedItems[0];
+                    if (index < this.dirList.length - 1) {
+                        // Swap items
+                        const item = this.dirList.splice(index, 1)[0];
+                        this.dirList.splice(index + 1, 0, item);
+                        this.refreshList();
+                        // Re-select the moved item
+                        this.selectItem(index + 1);
+                    }
+                } else {
+                    this.showMessage('Please select exactly one item to move.', 'error');
+                }
+            }
+
+            selectItem(index) {
+                const items = this.listContainer.querySelectorAll('.list-item');
+                if (items[index]) {
+                    items[index].classList.add('selected');
+                }
+            }
+
+            clearAll() {
+                this.dirList = [];
+                this.resultLinkInput.value = '';
+                this.refreshList();
+            }
+
+            generateLink() {
+                const username = this.usernameInput.value.trim();
+                if (!username) {
+                    this.showMessage('Username cannot be empty', 'error');
+                    return;
+                }
+
+                if (!this.isValidPathComponent(username)) {
+                    this.showMessage('Username contains invalid characters', 'error');
+                    return;
+                }
+
+                const repo = this.dirList.join('/');
+                let link;
+                if (repo) {
+                    link = `https://${username}.github.io/${repo}`;
+                } else {
+                    link = `https://${username}.github.io/`;
+                }
+
+                this.resultLinkInput.value = link;
+
+                // Copy to clipboard
+                navigator.clipboard.writeText(link).then(() => {
+                    this.showMessage(`Link copied to clipboard:\n${link}`, 'success');
+                }).catch(err => {
+                    // Fallback if clipboard API fails
+                    this.resultLinkInput.select();
+                    document.execCommand('copy');
+                    this.showMessage(`Link copied to clipboard:\n${link}`, 'success');
+                });
+            }
+
+            openLink() {
+                const link = this.resultLinkInput.value;
+                if (link) {
+                    window.open(link, '_blank');
+                } else {
+                    this.showMessage('Please generate a link first', 'error');
+                }
+            }
+
+            refreshList() {
+                this.listContainer.innerHTML = '';
+
+                this.dirList.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    div.innerHTML = `
+                        <span>${item}</span>
+                        <div class="item-controls">
+                            <div class="item-buttons">
+                                <button class="item-button move-up-btn" data-index="${index}">↑</button>
+                                <button class="item-button move-down-btn" data-index="${index}">↓</button>
+                            </div>
+                            <button class="item-button remove-btn" data-index="${index}">✕</button>
+                        </div>
+                    `;
+
+                    div.addEventListener('click', (e) => {
+                        // Prevent selection when clicking buttons
+                        if (!e.target.closest('.item-button')) {
+                            // Toggle selection - hold Ctrl for multiple selections
+                            if (e.ctrlKey) {
+                                div.classList.toggle('selected');
+                            } else {
+                                // Clear all selections first
+                                this.listContainer.querySelectorAll('.list-item').forEach(item => {
+                                    item.classList.remove('selected');
+                                });
+                                // Then select this item
+                                div.classList.add('selected');
+                            }
+                        }
+                    });
+
+                    this.listContainer.appendChild(div);
+                });
+
+                // Add event listeners to the new buttons
+                this.listContainer.querySelectorAll('.remove-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const index = parseInt(btn.getAttribute('data-index'));
+                        this.dirList.splice(index, 1);
+                        this.refreshList();
+                    });
+                });
+
+                this.listContainer.querySelectorAll('.move-up-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const index = parseInt(btn.getAttribute('data-index'));
+                        if (index > 0) {
+                            const item = this.dirList.splice(index, 1)[0];
+                            this.dirList.splice(index - 1, 0, item);
+                            this.refreshList();
+                            this.selectItem(index - 1);
+                        }
+                    });
+                });
+
+                this.listContainer.querySelectorAll('.move-down-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const index = parseInt(btn.getAttribute('data-index'));
+                        if (index < this.dirList.length - 1) {
+                            const item = this.dirList.splice(index, 1)[0];
+                            this.dirList.splice(index + 1, 0, item);
+                            this.refreshList();
+                            this.selectItem(index + 1);
+                        }
+                    });
+                });
+            }
+
+            showMessage(text, type) {
+                this.messageArea.innerHTML = `<div class="${type}-message">${text}</div>`;
+
+                // Clear message after 3 seconds
+                setTimeout(() => {
+                    this.messageArea.innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        // Initialize the app when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new LinkGeneratorApp();
+        });
+    </script>
+</body>
+</html>
