@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-mode="basic">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Calculator Pro</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ── Top Bar ── -->
+    <div class="top-bar">
+      <span class="app-title">Calculator <span class="pro-badge">PRO</span></span>
+      <div class="top-actions">
+        <button class="icon-btn" id="soundBtn"    title="Sound on/off"   aria-label="Toggle sound">🔊</button>
+        <button class="export-top-btn" id="exportBtn" title="Export history" aria-label="Export history">Export</button>
+        <button class="icon-btn" id="themeToggle" title="Toggle theme"   aria-label="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <!-- ── Mode Tabs ── -->
+    <div class="mode-tabs">
+      <button class="tab active" data-mode="basic">Basic</button>
+      <button class="tab"        data-mode="scientific">Scientific</button>
+      <button class="tab"        data-mode="unit">Unit</button>
+    </div>
+
+    <!-- ── Calculator Card ── -->
+    <div class="calculator">
+
+      <!-- Display -->
+      <div class="display" id="display">
+        <div class="memory-indicator" id="memIndicator"></div>
+        <div class="expression" id="expression"></div>
+        <div class="live-preview" id="livePreview"></div>
+        <div class="result-row">
+          <div class="result" id="result">0</div>
+          <button class="copy-btn" id="copyBtn" title="Copy result" aria-label="Copy result">⧉</button>
+        </div>
+        <div class="copy-toast" id="copyToast">Copied!</div>
+      </div>
+
+      <!-- ── BASIC PANEL ── -->
+      <div class="panel" id="panelBasic">
+
+        <!-- Memory row -->
+        <div class="memory-row">
+          <button class="btn btn-mem" data-action="mc">MC</button>
+          <button class="btn btn-mem" data-action="mr">MR</button>
+          <button class="btn btn-mem" data-action="m-">M−</button>
+          <button class="btn btn-mem" data-action="m+">M+</button>
+        </div>
+
+        <!-- Main grid -->
+        <div class="buttons">
+          <button class="btn btn-utility" data-action="clear">AC</button>
+          <button class="btn btn-utility" data-action="delete">⌫</button>
+          <button class="btn btn-utility" data-action="percent">%</button>
+          <button class="btn btn-operator" data-value="÷">÷</button>
+
+          <button class="btn btn-number" data-value="7">7</button>
+          <button class="btn btn-number" data-value="8">8</button>
+          <button class="btn btn-number" data-value="9">9</button>
+          <button class="btn btn-operator" data-value="×">×</button>
+
+          <button class="btn btn-number" data-value="4">4</button>
+          <button class="btn btn-number" data-value="5">5</button>
+          <button class="btn btn-number" data-value="6">6</button>
+          <button class="btn btn-operator" data-value="−">−</button>
+
+          <button class="btn btn-number" data-value="1">1</button>
+          <button class="btn btn-number" data-value="2">2</button>
+          <button class="btn btn-number" data-value="3">3</button>
+          <button class="btn btn-operator" data-value="+">+</button>
+
+          <button class="btn btn-number btn-zero" data-value="0">0</button>
+          <button class="btn btn-number" data-value=".">.</button>
+          <button class="btn btn-equals" data-action="equals">=</button>
+        </div>
+      </div>
+
+      <!-- ── SCIENTIFIC PANEL ── -->
+      <div class="panel hidden" id="panelScientific">
+
+        <!-- Sci extra row 1 -->
+        <div class="sci-grid">
+          <button class="btn btn-sci" data-action="sci-sin">sin</button>
+          <button class="btn btn-sci" data-action="sci-cos">cos</button>
+          <button class="btn btn-sci" data-action="sci-tan">tan</button>
+          <button class="btn btn-sci" data-action="sci-log">log</button>
+          <button class="btn btn-sci" data-action="sci-ln">ln</button>
+
+          <button class="btn btn-sci" data-action="sci-sqrt">√</button>
+          <button class="btn btn-sci" data-action="sci-sq">x²</button>
+          <button class="btn btn-sci" data-action="sci-pow">xⁿ</button>
+          <button class="btn btn-sci" data-action="sci-pi">π</button>
+          <button class="btn btn-sci" data-action="sci-e">e</button>
+
+          <button class="btn btn-sci" data-action="sci-inv">1/x</button>
+          <button class="btn btn-sci" data-action="sci-abs">|x|</button>
+          <button class="btn btn-sci" data-action="sci-fact">n!</button>
+          <button class="btn btn-sci" data-value="(">(</button>
+          <button class="btn btn-sci" data-value=")">)</button>
+        </div>
+
+        <!-- Memory row -->
+        <div class="memory-row">
+          <button class="btn btn-mem" data-action="mc">MC</button>
+          <button class="btn btn-mem" data-action="mr">MR</button>
+          <button class="btn btn-mem" data-action="m-">M−</button>
+          <button class="btn btn-mem" data-action="m+">M+</button>
+        </div>
+
+        <!-- Main grid (same layout) -->
+        <div class="buttons">
+          <button class="btn btn-utility" data-action="clear">AC</button>
+          <button class="btn btn-utility" data-action="delete">⌫</button>
+          <button class="btn btn-utility" data-action="percent">%</button>
+          <button class="btn btn-operator" data-value="÷">÷</button>
+
+          <button class="btn btn-number" data-value="7">7</button>
+          <button class="btn btn-number" data-value="8">8</button>
+          <button class="btn btn-number" data-value="9">9</button>
+          <button class="btn btn-operator" data-value="×">×</button>
+
+          <button class="btn btn-number" data-value="4">4</button>
+          <button class="btn btn-number" data-value="5">5</button>
+          <button class="btn btn-number" data-value="6">6</button>
+          <button class="btn btn-operator" data-value="−">−</button>
+
+          <button class="btn btn-number" data-value="1">1</button>
+          <button class="btn btn-number" data-value="2">2</button>
+          <button class="btn btn-number" data-value="3">3</button>
+          <button class="btn btn-operator" data-value="+">+</button>
+
+          <button class="btn btn-number btn-zero" data-value="0">0</button>
+          <button class="btn btn-number" data-value=".">.</button>
+          <button class="btn btn-equals" data-action="equals">=</button>
+        </div>
+      </div>
+
+      <!-- ── UNIT CONVERTER PANEL ── -->
+      <div class="panel hidden" id="panelUnit">
+        <div class="unit-converter">
+          <select id="unitCategory" aria-label="Unit category">
+            <option value="length">Length</option>
+            <option value="weight">Weight</option>
+            <option value="temp">Temperature</option>
+            <option value="speed">Speed</option>
+            <option value="area">Area</option>
+          </select>
+          <div class="unit-row">
+            <input  type="number" id="unitInput"  placeholder="Enter value" aria-label="Input value" />
+            <select id="unitFrom" aria-label="From unit"></select>
+          </div>
+          <div class="unit-arrow">⇅</div>
+          <div class="unit-row">
+            <input  type="number" id="unitOutput" placeholder="Result" readonly aria-label="Output value" />
+            <select id="unitTo" aria-label="To unit"></select>
+          </div>
+          <button class="btn btn-equals unit-convert-btn" id="convertBtn">Convert</button>
+        </div>
+      </div>
+
+    </div><!-- /calculator -->
+
+    <!-- ── History Panel ── -->
+    <div class="history-panel">
+      <div class="history-header">
+        <span>History</span>
+        <div class="history-actions">
+          <button class="clear-history-btn" id="clearHistory">Clear</button>
+        </div>
+      </div>
+      <ul class="history-list" id="historyList">
+        <li class="history-empty">No calculations yet</li>
+      </ul>
+    </div>
+
+  </div><!-- /app -->
+
+  <!-- Sound elements (silent AudioContext, no files needed) -->
+  <script src="script.js"></script>
+</body>
+</html>
