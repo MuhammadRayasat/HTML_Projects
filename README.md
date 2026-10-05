@@ -9,19 +9,69 @@ A collection of **web-based applications and utilities** built with HTML, CSS, a
 ```text
 HTML_Projects/
 │
-├── Eid-Mubarak/              # Interactive Eid greeting web app
-├── health-calculator.html    # Health and fitness calculator
-├── Quantity-Converter.html   # Unit conversion tool
-├── valentine.html            # Valentine's Day themed page
-├── valentine2.html           # Alternative Valentine's page
-└── Link-github.html          # GitHub profile link page
+├── calculator/               # Modern calculator application
+├── qr-generator/            # QR code generator tool
+├── Eid-Mubarak/             # Interactive Eid greeting web app
+├── health-calculator.html   # Health and fitness calculator
+├── Quantity-Converter.html  # Unit conversion tool
+├── valentine.html           # Valentine's Day themed page
+├── valentine2.html          # Alternative Valentine's page
+└── Link-github.html         # GitHub profile link page
 ```
 
 ---
 
 ## 🎨 Projects Overview
 
-### 1️⃣ Eid Mubarak Web App
+### 1️⃣ Calculator
+**Folder:** `calculator/`
+
+A modern, feature-rich calculator application.
+
+**Features:**
+- Basic arithmetic operations
+- Clean, intuitive interface
+- Responsive design
+- Keyboard support
+- Real-time calculations
+
+**Files:**
+- `index.html` - Calculator interface
+- `style.css` - Modern styling
+- `script.js` - Calculator logic
+
+**Tech Stack:** HTML5, CSS3, JavaScript
+
+---
+
+### 2️⃣ QR Code Generator
+**Folder:** `qr-generator/`
+
+Generate custom QR codes instantly.
+
+**Features:**
+- Text to QR code conversion
+- Customizable QR codes
+- Download generated QR codes
+- Real-time generation
+- Mobile-friendly interface
+
+**Files:**
+- `index.html` - Generator interface
+- `style.css` - Styling
+- `app.js` - QR generation logic
+
+**Tech Stack:** HTML5, CSS3, JavaScript
+
+**Use Cases:**
+- Business cards
+- Contact information sharing
+- URL shortening
+- Event tickets
+
+---
+
+### 3️⃣ Eid Mubarak Web App
 **Folder:** `Eid-Mubarak/`
 
 An interactive web application for sending Eid greetings.
@@ -44,7 +94,7 @@ An interactive web application for sending Eid greetings.
 
 ---
 
-### 2️⃣ Health Calculator
+### 4️⃣ Health Calculator
 **File:** `health-calculator.html`
 
 A comprehensive health and fitness calculator.
@@ -63,7 +113,7 @@ A comprehensive health and fitness calculator.
 
 ---
 
-### 3️⃣ Quantity Converter
+### 5️⃣ Quantity Converter
 **File:** `Quantity-Converter.html`
 
 A versatile unit conversion tool.
@@ -82,7 +132,7 @@ A versatile unit conversion tool.
 
 ---
 
-### 4️⃣ Valentine's Day Pages
+### 6️⃣ Valentine's Day Pages
 **Files:** `valentine.html`, `valentine2.html`
 
 Themed web pages for Valentine's Day celebrations.
@@ -101,7 +151,7 @@ Themed web pages for Valentine's Day celebrations.
 
 ---
 
-### 5️⃣ GitHub Profile Link
+### 7️⃣ GitHub Profile Link
 **File:** `Link-github.html`
 
 A custom landing page linking to GitHub profile.
